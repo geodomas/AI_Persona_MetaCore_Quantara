@@ -1,0 +1,3 @@
+[submodule "MetaCore_FIRMWARE"]
+	path = MetaCore_FIRMWARE
+	url = git@github.com:geodomas/MetaCore_FIRMWARE.git
