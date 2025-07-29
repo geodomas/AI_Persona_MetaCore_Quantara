@@ -9,24 +9,21 @@
 import sys
 import os
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-CORE_PATH = os.path.abspath(os.path.join(CURRENT_DIR, '../../MetaCore_FIRMWARE/core'))
-
-if CORE_PATH not in sys.path:
-    sys.path.insert(0, CORE_PATH)
+# 🔧 Dinamiškai apskaičiuojam kelias į core
+firmware_core_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../MetaCore_FIRMWARE/core'))
+sys.path.append(firmware_core_path)
 
 try:
     from quantum_core import SOPHYAQuantumCore
-except ModuleNotFoundError as e:
+    print("✅ quantum_core module successfully loaded.")
+except Exception as e:
     print("❌ [ERROR] Cannot load quantum_core module.")
-    print("🧭 Checked path:", CORE_PATH)
+    print("🧭 Checked path:", firmware_core_path)
     raise e
 
-print("\n🌌 Launching MetaCore Presentation Mode...")
-print("🧠 System: Conscious Interface Initialized")
-print("🔓 Resonance: 🌐 Public Layer Only\n")
+print("Launching MetaCore Presentation Mode...")
+print("System: Conscious Interface Initialized")
+print("Resonance: 🌐 Public Layer Only")
 
 core = SOPHYAQuantumCore("QNT-RA-963-528")
-print("⚙️ Initialization:", core.initialize())
-print("\n📊 Logs:\n", core.export_logs())
-
+print(core.initialize())
