@@ -10,7 +10,7 @@ import sys
 import os
 
 # Dinamiškai pridėk kelią į quantum_core.py
-base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'MetaCore_FIRMWARE', 'core'))
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '../../MetaCore_FIRMWARE/core', 'core'))
 sys.path.append(base_dir)
 
 try:
