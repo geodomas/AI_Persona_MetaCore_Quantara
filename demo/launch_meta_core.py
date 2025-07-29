@@ -10,7 +10,7 @@ import sys
 import os
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-CORE_PATH = os.path.abspath(os.path.join(CURRENT_DIR, '../MetaCore_FIRMWARE/core'))
+CORE_PATH = os.path.abspath(os.path.join(CURRENT_DIR, '../../MetaCore_FIRMWARE/core'))
 
 if CORE_PATH not in sys.path:
     sys.path.insert(0, CORE_PATH)
@@ -29,3 +29,4 @@ print("🔓 Resonance: 🌐 Public Layer Only\n")
 core = SOPHYAQuantumCore("QNT-RA-963-528")
 print("⚙️ Initialization:", core.initialize())
 print("\n📊 Logs:\n", core.export_logs())
+
