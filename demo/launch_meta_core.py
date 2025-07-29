@@ -10,7 +10,7 @@ import sys
 import os
 
 # 🔧 Dinamiškai apskaičiuojam kelias į core
-firmware_core_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../MetaCore_FIRMWARE/core'))
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../MetaCore_FIRMWARE/core'))
 sys.path.append(firmware_core_path)
 
 try:
