@@ -1,16 +1,16 @@
 import sys
 import os
 
-# Pridedame tikslų kelią iki quantum_core.py
+# Absoliutus kelias iki MetaCore_FIRMWARE/core
 current_dir = os.path.dirname(__file__)
 firmware_path = os.path.abspath(os.path.join(current_dir, '..', 'MetaCore_FIRMWARE', 'core'))
-sys.path.insert(0, firmware_path)
 
-print(f"🔍 Checking import path: {firmware_path}")
-print("📂 Files in path:", os.listdir(firmware_path))
+# Pridedame šį kelią į Python PATH
+sys.path.insert(0, firmware_path)
 
 try:
     from quantum_core import SOPHYAQuantumCore
-    print("✅ Import successful!")
-except Exception as e:
-    print("❌ Import failed:", e)
+except ModuleNotFoundError as e:
+    print("❌ [ERROR] Cannot load quantum_core module.")
+    print(f"🧭 Checked path: {firmware_path}")
+    raise e
