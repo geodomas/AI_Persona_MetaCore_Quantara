@@ -13,10 +13,14 @@ def extract_meta_header(doc_path):
     lines = text.split("#VTXT_META_HEADER_START")[1].split("\n")
     header = {}
     for line in lines:
-        if "]" in line and ":" in line:
-            key, value = line.strip().strip("[]").split("]: ")
-            header[key.strip()] = value.strip().strip('"“”')
+        if "]: " in line:
+            try:
+                key, value = line.strip().strip("[]").split("]: ", 1)
+                header[key.strip()] = value.strip().strip('"“”')
+            except ValueError:
+                continue  # ignore malformed lines
     return header
+
 
 def build_index():
     index = {}
