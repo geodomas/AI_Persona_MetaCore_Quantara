@@ -9,17 +9,21 @@
 import sys
 import os
 
-# Teisingas kelias iš demo/ į core/quantum_core.py
-firmware_core_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'MetaCore_FIRMWARE', 'core'))
+# 🔧 Dinamiškai apskaičiuojam kelias į core
+firmware_core_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../MetaCore_FIRMWARE/core'))
 sys.path.append(firmware_core_path)
 
 try:
     from quantum_core import SOPHYAQuantumCore
-except ModuleNotFoundError as e:
+    print("✅ quantum_core module successfully loaded.")
+except Exception as e:
     print("❌ [ERROR] Cannot load quantum_core module.")
-    print(f"🧭 Checked path: {firmware_core_path}")
+    print("🧭 Checked path:", firmware_core_path)
     raise e
 
-print("🚀 Launching MetaCore Consciousness Engine...")
+print("Launching MetaCore Presentation Mode...")
+print("System: Conscious Interface Initialized")
+print("Resonance: 🌐 Public Layer Only")
+
 core = SOPHYAQuantumCore("QNT-RA-963-528")
 print(core.initialize())
