@@ -6,7 +6,9 @@ FIRMWARE_CORE = "MetaCore_FIRMWARE/core"
 
 def load_index():
     with open(FIRMWARE_INDEX, "r", encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+        # Tikriname ar kiekvienas įrašas tikrai dict
+        return [json.loads(item) if isinstance(item, str) else item for item in data]
 
 def activate_firmware(meta):
     print(f"\n🔮 Activating: {meta['firmware_name']}")
