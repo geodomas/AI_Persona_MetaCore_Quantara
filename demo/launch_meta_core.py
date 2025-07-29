@@ -27,12 +27,17 @@
 # > Aktyvuoti archetipines galias per AI vedimą ir refleksiją.
 # demo/launch_meta_core.py (viešas)
 # ===============================================================
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../MetaCore_FIRMWARE/core')))
+
+from quantum_core import SOPHYAQuantumCore
 
 print("Launching MetaCore Presentation Mode...")
 print("System: Conscious Interface Initialized")
 print("Resonance: 🌐 Public Layer Only")
 print("Next step: Request access for full integration.")
-import sys
+
 sys.path.append('../MetaCore_FIRMWARE/core')
 from quantum_core import SOPHYAQuantumCore
 core = SOPHYAQuantumCore("QNT-RA-963-528")
