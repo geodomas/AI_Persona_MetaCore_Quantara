@@ -83,11 +83,16 @@ def main():
         return
 
     index_data = load_index()
-    registered = {
-        mod["file"]: mod
-        for group in index_data
-        for mod in group.get("modules", [])
-    }
+
+    # 👇 Universalus apdorojimas – jei duomenys turi 'modules' raktą
+    if isinstance(index_data, dict) and "modules" in index_data:
+        module_list = index_data["modules"]
+    elif isinstance(index_data, list):
+        module_list = index_data  # senesnė versija su tiesiog sąrašu
+    else:
+        module_list = []
+
+    registered = {mod["file"]: mod for mod in module_list}
 
     for fw in fw_list:
         display_firmware(fw)
