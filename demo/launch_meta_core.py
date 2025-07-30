@@ -15,3 +15,6 @@ except ModuleNotFoundError as e:
 print("🚀 Launching MetaCore Consciousness Engine...")
 core = SOPHYAQuantumCore("QNT-RA-963-528")
 print(core.initialize())
+core.boot_auto_start_modules()
+print("\nQuantum Report:\n", core.emit_report())
+
