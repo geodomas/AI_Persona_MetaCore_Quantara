@@ -106,10 +106,15 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--refresh", action="store_true", help="Regenerate firmware index before listing")
+    parser.add_argument("--regen-methods", action="store_true", help="Regenerate firmware method definitions")
     args = parser.parse_args()
 
     if args.refresh:
         print(Fore.MAGENTA + "🔄 Regenerating firmware index...")
         regenerate_firmware_index()
+
+    if args.regen_methods:
+        print(Fore.MAGENTA + "🧠 Regenerating firmware method definitions...")
+        subprocess.run(["python", "tools/generate_firmware_methods.py"], check=True)
 
     main()
