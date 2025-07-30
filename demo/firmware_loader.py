@@ -3,7 +3,10 @@ import json
 from docx import Document
 from openpyxl import load_workbook
 from colorama import Fore, Style, init
+from core.index_manager import regenerate_firmware_index
 
+# Atnaujinti indeksą po naujų failų skenavimo
+regenerate_firmware_index()
 init(autoreset=True)
 
 FIRMWARE_DIR = "MetaCore_FIRMWARE/core"
