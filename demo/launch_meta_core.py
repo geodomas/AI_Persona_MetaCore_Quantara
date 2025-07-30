@@ -1,8 +1,8 @@
 import sys
 import os
 
-# Koreguojame path'ą: iš demo → aukštyn 2 → į MetaCore_FIRMWARE/core
-firmware_core_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'MetaCore_FIRMWARE', 'core'))
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+firmware_core_path = os.path.join(base_dir, 'MetaCore_FIRMWARE', 'core')
 sys.path.append(firmware_core_path)
 
 try:
