@@ -1,9 +1,11 @@
 import os
 import sys
 import json
+import subprocess  # ← ŠITAS REIKALINGAS
 from docx import Document
 from openpyxl import load_workbook
 from colorama import Fore, Style, init
+
 
 # === SURENKAM CORE PATH ===
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
