@@ -1,38 +1,53 @@
 # tools/generate_firmware_methods.py
-
-import json
 import os
+from docx import Document
 
-INDEX_PATH = "MetaCore_FIRMWARE/config/firmware_index.json"
-OUTPUT_PATH = "MetaCore_FIRMWARE/core/firmware_methods.py"
+CORE_DIR = "MetaCore_FIRMWARE/core"
+OUT_FILE = os.path.join(CORE_DIR, "firmware_methods.py")
 
-def snake_case(name):
-    return name.lower().replace(" ", "_").replace("-", "_")
+def extract_meta(doc_path):
+    doc = Document(doc_path)
+    full_text = "\n".join(p.text.strip() for p in doc.paragraphs if p.text.strip())
+    if "#VTXT_META_HEADER_START" not in full_text:
+        return None
+    lines = full_text.split("#VTXT_META_HEADER_START")[1].splitlines()
+    meta = {}
+    for line in lines:
+        if "]: " in line:
+            try:
+                key, val = line.strip().strip("[]").split("]: ", 1)
+                meta[key.strip()] = val.strip().strip('"“”')
+            except ValueError:
+                continue
+    return meta
 
-def generate_method(module):
-    name = module.get("file", "unknown").replace("firmware_", "").replace(".docx", "")
-    func_name = snake_case(name)
-    description = module.get("name", "Firmware Module")
-    return f"""
-def {func_name}(self):
-    self.log_event("firmware_{func_name}", {{"status": "active"}})
-    return "⚙️ {description} activated."
-""".strip()
+def safe_method_name(s):
+    return s.replace("-", "_").replace(".", "_")
 
-def main():
-    with open(INDEX_PATH, "r") as f:
-        index_data = json.load(f)
+def generate_methods():
+    method_defs = []
+    for fname in os.listdir(CORE_DIR):
+        if not fname.endswith(".docx"): continue
+        path = os.path.join(CORE_DIR, fname)
+        meta = extract_meta(path)
+        if not meta: continue
 
-    methods = []
-    for group in index_data:
-        for mod in group.get("modules", []):
-            methods.append(generate_method(mod))
+        file_id = safe_method_name(fname.replace("firmware_", "").replace(".docx", ""))
+        label = meta.get("COMMAND", "Activate firmware module.")
+        docstring = label.replace('"', "'")
+        method = f'''
+def {file_id}(self):
+    """{docstring}"""
+    self.log_event("firmware_{file_id}", {{"status": "active"}})
+    return "🔧 {file_id} module launched: {docstring}"
+'''
+        method_defs.append(method.strip())
 
-    content = "# Auto-generated firmware methods\n\n" + "\n\n".join(methods) + "\n"
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write(content)
+    with open(OUT_FILE, "w", encoding="utf-8") as f:
+        f.write("# Auto-generated firmware methods\n")
+        f.write("\n\n".join(method_defs))
 
-    print(f"✅ Generated {len(methods)} methods in: {OUTPUT_PATH}")
+    print(f"✅ {len(method_defs)} firmware methods written to: {OUT_FILE}")
 
 if __name__ == "__main__":
-    main()
+    generate_methods()
