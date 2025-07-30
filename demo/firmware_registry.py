@@ -6,36 +6,66 @@ FIRMWARE_PATH = "MetaCore_FIRMWARE/core"
 INDEX_PATH = "MetaCore_FIRMWARE/config/firmware_index.json"
 
 def extract_meta_header(doc_path):
-    doc = Document(doc_path)
-    text = "\n".join([para.text for para in doc.paragraphs])
-    if "#VTXT_META_HEADER_START" not in text:
+    try:
+        doc = Document(doc_path)
+        text = "\n".join([para.text for para in doc.paragraphs])
+        if "#VTXT_META_HEADER_START" not in text:
+            return None
+
+        lines = text.split("#VTXT_META_HEADER_START")[1].split("\n")
+        header = {}
+        for line in lines:
+            if "]: " in line:
+                try:
+                    key, value = line.strip().strip("[]").split("]: ", 1)
+                    header[key.strip()] = value.strip().strip('"“”')
+                except ValueError:
+                    continue  # malformed line
+        return header if header else None
+    except Exception as e:
+        print(f"⚠️ Error reading {doc_path}: {e}")
         return None
-    lines = text.split("#VTXT_META_HEADER_START")[1].split("\n")
-    header = {}
-    for line in lines:
-        if "]: " in line:
-            try:
-                key, value = line.strip().strip("[]").split("]: ", 1)
-                header[key.strip()] = value.strip().strip('"“”')
-            except ValueError:
-                continue  # ignore malformed lines
-    return header
+
+
+def validate_metadata(meta):
+    required = ["id", "name"]
+    for key in required:
+        if key not in meta:
+            return False
+    if "auto_start" not in meta:
+        meta["auto_start"] = False
+    else:
+        meta["auto_start"] = str(meta["auto_start"]).lower() == "true"
+    return True
 
 
 def build_index():
-    index = {}
+    index = {"modules": []}
+
     for fname in os.listdir(FIRMWARE_PATH):
-        if fname.endswith(".docx"):
-            path = os.path.join(FIRMWARE_PATH, fname)
-            meta = extract_meta_header(path)
-            if meta:
-                firmware_id = fname.replace(".docx", "")
-                index[firmware_id] = meta
-                print(f"✅ Indexed: {firmware_id}")
+        if not fname.endswith(".docx"):
+            continue
+
+        path = os.path.join(FIRMWARE_PATH, fname)
+        meta = extract_meta_header(path)
+
+        if meta and validate_metadata(meta):
+            firmware_id = fname.replace(".docx", "")
+            index["modules"].append({
+                "name": meta["name"],
+                "file": firmware_id,
+                "auto_start": meta["auto_start"]
+            })
+            print(f"✅ Indexed: {firmware_id} → {meta['name']} [auto_start={meta['auto_start']}]")
+        else:
+            print(f"⛔ Skipped: {fname} (missing required metadata)")
+
     os.makedirs(os.path.dirname(INDEX_PATH), exist_ok=True)
-    with open(INDEX_PATH, "w") as f:
+    with open(INDEX_PATH, "w", encoding="utf-8") as f:
         json.dump(index, f, indent=2, ensure_ascii=False)
-    print(f"\n📦 Firmware index saved to {INDEX_PATH}")
+
+    print(f"\n📦 Firmware index saved to `{INDEX_PATH}` with {len(index['modules'])} entries.")
+
 
 if __name__ == "__main__":
     build_index()
