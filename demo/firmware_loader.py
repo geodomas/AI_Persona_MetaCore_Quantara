@@ -88,4 +88,12 @@ def main():
             print(Fore.RED + "✖ Not found in firmware_index.json")
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--refresh", action="store_true", help="Regenerate firmware index")
+    args = parser.parse_args()
+
+    if args.refresh:
+        regenerate_firmware_index()
+    
     main()
