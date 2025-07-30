@@ -5,18 +5,19 @@ from docx import Document
 from openpyxl import load_workbook
 from colorama import Fore, Style, init
 
-# Įtraukiam core modulį iš submodule
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'MetaCore_FIRMWARE')))
-from core.index_manager import regenerate_firmware_index
+# === SURENKAM CORE PATH ===
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+firmware_core_path = os.path.join(base_dir, 'MetaCore_FIRMWARE', 'core')
+sys.path.insert(0, firmware_core_path)
 
-# 🎨 Spalvų inicializavimas
+# === Importuojam indeksų tvarkytoją ===
+from index_manager import regenerate_firmware_index
+
 init(autoreset=True)
 
-# === Konfigūracijos ===
-FIRMWARE_DIR = "MetaCore_FIRMWARE/core"
-INDEX_PATH = "MetaCore_FIRMWARE/config/firmware_index.json"
+FIRMWARE_DIR = os.path.join(base_dir, "MetaCore_FIRMWARE", "core")
+INDEX_PATH = os.path.join(base_dir, "MetaCore_FIRMWARE", "config", "firmware_index.json")
 
-# === DOCX META HEADERS ===
 def read_docx_meta(path):
     try:
         doc = Document(path)
@@ -36,7 +37,6 @@ def read_docx_meta(path):
     except Exception as e:
         return {"error": f"❌ Error reading DOCX: {e}"}
 
-# === XLSX APŽVALGA ===
 def read_xlsx_preview(path):
     try:
         wb = load_workbook(filename=path, data_only=True)
@@ -50,14 +50,12 @@ def read_xlsx_preview(path):
     except Exception as e:
         return f"❌ Error reading XLSX: {e}"
 
-# === Failų sąrašas ===
 def list_firmwares():
     return [
         f for f in os.listdir(FIRMWARE_DIR)
         if f.startswith("firmware_") and f.endswith((".docx", ".xlsx"))
     ]
 
-# === Įkelti JSON indeksą ===
 def load_index():
     try:
         with open(INDEX_PATH, "r") as f:
@@ -66,7 +64,6 @@ def load_index():
         print(Fore.RED + f"⚠️ Unable to load index: {e}")
         return []
 
-# === Rodyti vieną failą ===
 def display_firmware(file):
     path = os.path.join(FIRMWARE_DIR, file)
     print(f"\n{Fore.CYAN}📦 {file}")
@@ -78,7 +75,6 @@ def display_firmware(file):
     elif file.endswith(".xlsx"):
         print(read_xlsx_preview(path))
 
-# === Pagrindinė programa ===
 def main():
     print(Fore.GREEN + "🌐 Scanning FIRMWARE Modules...\n")
     fw_list = list_firmwares()
@@ -101,7 +97,6 @@ def main():
         else:
             print(Fore.RED + "✖ Not found in firmware_index.json")
 
-# === Argumentai ===
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
