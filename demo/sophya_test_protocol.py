@@ -1,42 +1,33 @@
 # demo/sophya_test_protocol.py
-
 import json
-import os
-from MetaCore_FIRMWARE.core.quantum_core import SOPHYAQuantumCore
+from pathlib import Path
+from datetime import datetime
+from core.quantum_core import QuantumCore, BiofieldScanner
 
-PROMPT_PATH = "demo/default_prompts.json"
-RESULT_PATH = "demo/result_output.json"
+# Load prompts (default or from input)
+def load_prompts(file_path='default_prompts.json'):
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return json.load(f)["prompts"]
 
-def load_prompts():
-    if os.path.exists(PROMPT_PATH):
-        with open(PROMPT_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []
+# Save results
+def save_results(results, file_path='result_output.json'):
+    with open(file_path, 'w', encoding='utf-8') as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
 
-def save_results(results):
-    with open(RESULT_PATH, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-
-def main():
+def run_demo(user_id="test_user"):
+    core = QuantumCore(user_id)
+    scanner = BiofieldScanner()
     prompts = load_prompts()
-    core = SOPHYAQuantumCore()
-    core.initialize()
-    responses = []
 
-    for i, phrase in enumerate(prompts, start=1):
-        result = core.scan_emotion(phrase)
-        responses.append({
-            "input": phrase,
-            "analysis": result
-        })
-        print(f"[{i}/10] ✅ {phrase} → {result.get('resonance_level', 'N/A')}")
+    results = []
+    for i, sentence in enumerate(prompts, 1):
+        response = scanner.scan(sentence)
+        response["id"] = i
+        response["input"] = sentence
+        results.append(response)
 
-    save_results({
-        "user": core.identity_code,
-        "coherence": core.coherence,
-        "results": responses
-    })
-    print(f"\n📄 Results saved to: {RESULT_PATH}")
+    save_results(results)
+    print("✅ SOPHYA DEMO test completed! Results saved to result_output.json")
 
 if __name__ == "__main__":
-    main()
+    run_demo()
